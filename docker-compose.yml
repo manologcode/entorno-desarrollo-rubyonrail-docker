@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  db:
+    image:  postgres:12.10-alpine
+    container_name: db${APP_NAME}
+    volumes:
+      - ./_dbpg:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: toor
+
+  rails:
+    image: iruby:3.1.2
+    container_name: ruby${APP_NAME}
+    build:
+      context: ./
+      dockerfile: DockerFileRails
+    depends_on:
+      - db
+    environment:
+      RAILS_ENV: development
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: toor
+
+    volumes:
+      - ./web:/home/myuser/app
+      - ./_bundle:/usr/local/bundle
+
+    ports:
+      - 3000:3000
+    tty: true
